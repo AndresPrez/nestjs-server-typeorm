@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  dev:
+    container_name: appdev
+    image: app-dev:latest
+    build:
+      context: .
+      target: app-dev
+      dockerfile: ./Dockerfile
+    # command: sh -c "yarn start:dev"
+    # command: sh -c "yarn typeorm schema:sync -c seed && yarn typeorm migration:run -c seed && yarn start:dev"
+    command: sh -c "yarn refresh-schema && yarn seed-data && yarn start:dev"
+    ports:
+      - 3000:3000
+    networks: [app-net]
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+
+  prod:
+    container_name: appprod
+    image: app-prod:latest
+    build:
+      context: .
+      target: app-prod
+      dockerfile: ./Dockerfile
+    command: npm run start:prod
+    ports:
+      - 3003:3000
+    volumes:
+      - .:/usr/src/app
+    restart: unless-stopped
+    networks:
+      - app-net
+
+  db:
+    container_name: appdb
+    image: postgres:11-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: database
+    networks:
+      - app-net
+networks:
+  app-net:
