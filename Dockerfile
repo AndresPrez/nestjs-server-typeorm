@@ -1,3 +1,4 @@
+# Inspired from https://dev.to/erezhod/setting-up-a-nestjs-project-with-docker-for-back-end-development-30lg
 FROM ubuntu:latest AS app-dev
 
 # Installs Curl
@@ -16,21 +17,11 @@ RUN apt install -y postgresql-client
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-
 RUN npm install glob rimraf
-
-RUN npm install --only=development
 
 COPY . .
 
-# Installs bcrypt directly from withing the container's environment as suggested by https://stackoverflow.com/a/62445004
-# The error occurs because when you install bcypt, npm installs the recommended
-# version for your machine and operating system, but when you are on another machine, this doesn't work.
-RUN npm uninstall bcrypt
-RUN npm i bcrypt
-
-RUN npm run build
+RUN yarn install && yarn build
 
 FROM ubuntu:latest as app-prod
 

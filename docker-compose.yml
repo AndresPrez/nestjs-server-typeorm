@@ -9,13 +9,18 @@ services:
       target: app-dev
       dockerfile: ./Dockerfile
     # command: sh -c "yarn start:dev"
-    # command: sh -c "yarn typeorm schema:sync -c seed && yarn typeorm migration:run -c seed && yarn start:dev"
     command: sh -c "yarn refresh-schema && yarn seed-data && yarn start:dev"
+    # command: sh -c "bash"
+    # tty: true
     ports:
       - 3000:3000
     networks: [app-net]
     volumes:
       - .:/usr/src/app
+      # This adds an anonymous volume for node_modules, because some node module installs are host specific like bcrypt.
+      # NOTE: doing this means that any node module updates done from outside the container will have no effect in the
+      # container's node modules.
+      - /usr/src/app/node_modules
     depends_on:
       - db
 

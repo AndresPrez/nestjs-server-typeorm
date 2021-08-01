@@ -1,0 +1,7 @@
+# Node modules management should be specific for the container since
+# node modules installs depend on the host, for example 'bcrypt'
+# bcrypt should be install directly from withing the container's environment as suggested by https://stackoverflow.com/a/62445004
+# Otherwise an error occurs because when you install bcrypt, npm installs the recommended version for your machine and operating system.
+node_modules
+yarn.lock
+package-lock.json
