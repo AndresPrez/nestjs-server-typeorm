@@ -10,7 +10,7 @@ export default {
   password: 'admin',
   database: 'database',
   entities: [User, Role],
+  logging: false,
   // synchronize: true,
-  logging: true,
-  dropSchema: false,
+  // dropSchema: false,
 } as ConnectionOptions;

@@ -1,4 +1,11 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Logger,
+} from '@nestjs/common';
+import { get, difference, size } from 'lodash';
+import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -26,9 +33,38 @@ export class ApiKeyAuthGuard implements CanActivate {
 
 @Injectable()
 export class RolesGuard implements CanActivate {
+  private readonly logger = new Logger(RolesGuard.name);
+
+  constructor(private reflector: Reflector) {}
+
+  hasMissingRoles(userRoles: string[], guardRoles: string[]): boolean {
+    const missingRoles = difference(guardRoles, userRoles);
+    if (Boolean(size(missingRoles))) {
+      this.logger.log(
+        `User has missing roles: ${JSON.stringify(missingRoles)}`,
+      );
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    return true;
+    const guardRoles = this.reflector.get<string[]>(
+      'roles',
+      context.getHandler(),
+    );
+    if (!guardRoles) {
+      return false;
+    }
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+    const userRoles: string[] = user.userRoles
+      ? user.userRoles.map((role: any) => role.name)
+      : [];
+
+    return !this.hasMissingRoles(userRoles, guardRoles);
   }
 }
