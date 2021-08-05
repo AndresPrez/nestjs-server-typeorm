@@ -4,6 +4,7 @@ services:
   dev:
     container_name: appdev
     image: app-dev:latest
+    init: true
     build:
       context: .
       target: app-dev
@@ -27,6 +28,7 @@ services:
   prod:
     container_name: appprod
     image: app-prod:latest
+    init: true
     build:
       context: .
       target: app-prod
@@ -43,6 +45,7 @@ services:
   db:
     container_name: appdb
     image: postgres:11-alpine
+    init: true
     restart: always
     environment:
       POSTGRES_USER: admin
