@@ -1,13 +1,15 @@
 # Application Server
 
 
-Installing the application node modules:
+### Installing the application node modules:
 
 `$> yarn`
 
-Running server locally with docker-compose (recommended):
+### Running server locally with docker-compose (recommended):
 
 `$> yarn dc:dev`
+
+This should leave your NestJs application running in `localhost:3000` with dark mode swagger docs at `localhost:3000/docs`
 
 
 
